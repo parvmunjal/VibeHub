@@ -1,7 +1,10 @@
 package com.vibehub.service.impl;
 
+import com.vibehub.dto.PostDto;
 import com.vibehub.dto.UserDto;
+import com.vibehub.models.Post;
 import com.vibehub.models.User;
+import com.vibehub.repo.PostRepo;
 import com.vibehub.repo.UserRepo;
 import com.vibehub.service.UserService;
 import org.modelmapper.ModelMapper;
@@ -15,7 +18,8 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepo userRepo;
-
+    @Autowired
+    private PostRepo postRepo;
     @Autowired
     private ModelMapper modelMapper;
 
@@ -35,7 +39,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto getUserById(String userId) {
         User user = userRepo.findById(userId).orElseThrow();
-        return userToDto(user);
+        UserDto userDto = userToDto(user);
+        List<Post> posts = postRepo.findAllByUserId(userId);
+        userDto.setPosts(posts.stream().map(this::postToDto).collect(Collectors.toList()));
+        return userDto;
     }
 
     @Override
@@ -62,5 +69,14 @@ public class UserServiceImpl implements UserService {
     private UserDto userToDto(User user){
         return modelMapper.map(user,UserDto.class);
     }
+    public Post dtoToPost(PostDto postDto) {
+        return modelMapper.map(postDto, Post.class);
+    }
+
+    public PostDto postToDto(Post post) {
+        return modelMapper.map(post, PostDto.class);
+    }
 }
+
+
 
