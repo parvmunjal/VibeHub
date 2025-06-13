@@ -12,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
+@CrossOrigin(origins = "http://localhost:3000")
 public class UserController {
     @Autowired
     private UserService userService;
@@ -40,5 +41,10 @@ public class UserController {
     public ResponseEntity<UserDto> updateUser(@PathVariable String userId,@RequestBody UserDto userDto){
         UserDto updatedUser = userService.updateUser(userId, userDto);
         return new ResponseEntity<>(updatedUser, HttpStatus.OK);
+    }
+    @PatchMapping("/{userId1}/follow/{userId2}")
+    public ResponseEntity<UserDto> followUser(@PathVariable String userId1,@PathVariable String userId2){
+        UserDto userDto = userService.followUser(userId1, userId2);
+        return ResponseEntity.ok(userDto);
     }
 }

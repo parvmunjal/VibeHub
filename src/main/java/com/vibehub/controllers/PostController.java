@@ -12,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/posts")
+@CrossOrigin(origins = "http://localhost:3000")
 public class PostController {
     @Autowired
     private PostService postService;
@@ -35,7 +36,7 @@ public class PostController {
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<PostDto>> getAllPosts(@PathVariable String userId){
+    public ResponseEntity<List<PostDto>> getAllPostsByUserId(@PathVariable String userId){
         List<PostDto> posts = postService.getAllPostsByUserId(userId);
         return ResponseEntity.ok(posts);
     }
@@ -50,5 +51,10 @@ public class PostController {
     public ResponseEntity<PostDto> updatePost(@RequestBody PostDto postDto,@PathVariable String postId){
         PostDto updatedPost = postService.updatePost(postId, postDto);
         return ResponseEntity.ok(updatedPost);
+    }
+    @PatchMapping("/{userId}/like/{postId}")
+    private ResponseEntity<PostDto> likePost(@PathVariable String postId,@PathVariable String userId){
+        PostDto post = postService.likePost(postId, userId);
+        return ResponseEntity.ok(post);
     }
 }

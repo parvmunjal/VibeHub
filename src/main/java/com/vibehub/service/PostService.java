@@ -17,4 +17,6 @@ public interface PostService {
     List<PostDto> getAllPosts();
     //get all posts by userId
     List<PostDto> getAllPostsByUserId(String userId);
+    //like post
+    PostDto likePost(String postId,String userId);
 }

@@ -4,6 +4,9 @@ import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Document(collection = "users")
 @Data
 public class User {
@@ -17,4 +20,8 @@ public class User {
     private String password;
     private String bio;
     private String profilePicUrl;
+    private List<String> followers=new ArrayList<>();
+    private List<String> followings=new ArrayList<>();
+    private List<String> stories=new ArrayList<>();
+    private List<String> posts=new ArrayList<>();
 }

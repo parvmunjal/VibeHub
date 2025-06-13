@@ -15,4 +15,6 @@ public interface UserService {
     UserDto updateUser(String userId,UserDto userDto);
     //delete user
     void deleteUser(String userId);
+    //follow user
+    UserDto followUser(String userId1,String userId2);// userid1 follows userid2
 }
