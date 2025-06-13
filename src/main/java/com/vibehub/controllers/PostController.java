@@ -60,8 +60,8 @@ public class PostController {
     }
     //get all posts of followings
     @GetMapping("/followers/{userId}")
-    public ResponseEntity<List<List<StoryDto>>> getAllPostsOfFollowings(@PathVariable String userId){
-        List<List<StoryDto>> stories = storyService.findAllStoriesOfFollowings(userId);
-        return ResponseEntity.ok(stories);
+    public ResponseEntity<List<List<PostDto>>> getAllPostsOfFollowings(@PathVariable String userId){
+        List<List<PostDto>> posts = postService.getAllPostsOfFollowings(userId);
+        return ResponseEntity.ok(posts);
     }
 }
