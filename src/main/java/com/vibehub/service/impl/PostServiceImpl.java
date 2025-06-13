@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -97,6 +98,28 @@ public class PostServiceImpl implements PostService {
 
         Post savedPost = postRepo.save(post);
         return mappingUtil.postToDto(savedPost);
+    }
+
+    @Override
+    public List<List<PostDto>> getAllPostsOfFollowings(String userId) {
+        User user = userRepo.findById(userId).orElseThrow(EntityNotFoundException::new);
+        List<String> userIds = user.getFollowings();
+        return findAllByFollowings(userIds);
+    }
+    private List<List<PostDto>> findAllByFollowings(List<String> userIds){
+        List<List<PostDto>> allPostsByFollowings=new ArrayList<>();
+        for(String userId:userIds){
+            List<PostDto> posts = findAllPosts(userId);
+            if(!posts.isEmpty()){
+                allPostsByFollowings.add(posts);
+            }
+        }
+        return allPostsByFollowings;
+    }
+    private List<PostDto> findAllPosts(String userId){
+        User user = userRepo.findById(userId).orElseThrow(EntityNotFoundException::new);
+        List<Post> posts = postRepo.findAllByUserIdOrderByTimeStampDesc(userId);
+        return posts.stream().map((post) -> mappingUtil.postToDto(post)).toList();
     }
 }
 

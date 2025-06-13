@@ -8,15 +8,14 @@ import com.vibehub.payload.MappingUtil;
 import com.vibehub.repo.StoryRepo;
 import com.vibehub.repo.UserRepo;
 import com.vibehub.service.StoryService;
-import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class StoryServiceImpl implements StoryService {
@@ -75,5 +74,27 @@ public class StoryServiceImpl implements StoryService {
     public List<StoryDto> findAllByUserId(String userId) {
         List<Story> stories = storyRepo.findByUserId(userId);
         return stories.stream().map((story) -> mappingUtil.storyToDto(story)).toList();
+    }
+    @Override
+    public List<List<StoryDto>> findAllStoriesOfFollowings(String userId) {
+        User user = userRepo.findById(userId).orElseThrow(EntityNotFoundException::new);
+        List<String> userIds = user.getFollowings();
+        return findAllByFollowings(userIds);
+    }
+
+    private List<StoryDto> findAllActiveStoriesByUserId(String userId){
+        User user = userRepo.findById(userId).orElseThrow(EntityNotFoundException::new);
+        List<Story> stories = storyRepo.findAllByUserIdAndStatusTrue(userId);
+        return stories.stream().map((story) -> mappingUtil.storyToDto(story)).toList();
+    }
+    private List<List<StoryDto>> findAllByFollowings(List<String> userIds){
+        List<List<StoryDto>> allStoriesOfFollowings=new ArrayList<>();
+        for(String userId:userIds){
+            List<StoryDto> allByUserId = findAllActiveStoriesByUserId(userId);
+            if(!allByUserId.isEmpty()){
+                allStoriesOfFollowings.add(allByUserId);
+            }
+        }
+        return allStoriesOfFollowings;
     }
 }

@@ -10,4 +10,5 @@ public interface StoryService {
     StoryDto updateStory(String storyId,StoryDto storyDto);
     void deleteStory(String storyId);
     List<StoryDto> findAllByUserId(String userId);
+    List<List<StoryDto>> findAllStoriesOfFollowings(String userId);
 }

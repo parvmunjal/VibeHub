@@ -42,5 +42,10 @@ public class StoryController {
         List<StoryDto> stories = storyService.findAllByUserId(userId);
         return ResponseEntity.ok(stories);
     }
-
+    //get all stories of followings
+    @GetMapping("/followers/{userId}")
+    public ResponseEntity<List<List<StoryDto>>> getAllStoriesOfFollowings(@PathVariable String userId){
+        List<List<StoryDto>> stories = storyService.findAllStoriesOfFollowings(userId);
+        return ResponseEntity.ok(stories);
+    }
 }

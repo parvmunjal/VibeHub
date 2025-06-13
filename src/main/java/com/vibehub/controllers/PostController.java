@@ -1,6 +1,7 @@
 package com.vibehub.controllers;
 
 import com.vibehub.dto.PostDto;
+import com.vibehub.dto.StoryDto;
 import com.vibehub.payload.ApiResponse;
 import com.vibehub.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,5 +57,11 @@ public class PostController {
     private ResponseEntity<PostDto> likePost(@PathVariable String postId,@PathVariable String userId){
         PostDto post = postService.likePost(postId, userId);
         return ResponseEntity.ok(post);
+    }
+    //get all posts of followings
+    @GetMapping("/followers/{userId}")
+    public ResponseEntity<List<List<StoryDto>>> getAllPostsOfFollowings(@PathVariable String userId){
+        List<List<StoryDto>> stories = storyService.findAllStoriesOfFollowings(userId);
+        return ResponseEntity.ok(stories);
     }
 }

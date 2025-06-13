@@ -17,4 +17,5 @@ public class Story {
     private String content;
     private LocalDateTime timestamp;
     private Set<String> viewedBy=new HashSet<>();
+    private boolean status;
 }

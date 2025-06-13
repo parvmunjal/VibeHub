@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface StoryRepo extends MongoRepository<Story,String> {
     List<Story> findByUserId(String userId);
+    List<Story> findAllByUserIdAndStatusTrue(String userId);
 }
