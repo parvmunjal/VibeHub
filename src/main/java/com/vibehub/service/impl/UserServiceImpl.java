@@ -87,6 +87,22 @@ public class UserServiceImpl implements UserService {
         userRepo.save(user2);
         return mappingUtil.userToDto(user1);
     }
+
+    @Override
+    public List<UserDto> getFollowersByUserId(String userId) {
+        User user = userRepo.findById(userId).orElseThrow(EntityNotFoundException::new);
+        List<String> followers = user.getFollowers();
+        List<User> users = userRepo.findAllById(followers);
+        return users.stream().map((u)->mappingUtil.userToDto(u)).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<UserDto> getFollowingsByUserId(String userId) {
+        User user = userRepo.findById(userId).orElseThrow(EntityNotFoundException::new);
+        List<String> followings = user.getFollowings();
+        List<User> users = userRepo.findAllById(followings);
+        return users.stream().map((u)->mappingUtil.userToDto(u)).collect(Collectors.toList());
+    }
 }
 
 

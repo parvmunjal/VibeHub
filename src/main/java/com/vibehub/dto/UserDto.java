@@ -2,9 +2,6 @@ package com.vibehub.dto;
 
 import lombok.Data;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Data
 public class UserDto {
     private String id;
@@ -15,8 +12,4 @@ public class UserDto {
     private String email;
     private String phNo;
     private String profilePicUrl;
-    private List<String> posts=new ArrayList<>();
-    private List<String> followers=new ArrayList<>();
-    private List<String> followings=new ArrayList<>();
-    private List<String> stories=new ArrayList<>();
 }

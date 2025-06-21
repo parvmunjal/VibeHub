@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -46,5 +45,15 @@ public class UserController {
     public ResponseEntity<UserDto> followUser(@PathVariable String userId1,@PathVariable String userId2){
         UserDto userDto = userService.followUser(userId1, userId2);
         return ResponseEntity.ok(userDto);
+    }
+    @GetMapping("/followers/{userId}")
+    public ResponseEntity<List<UserDto>> getFollowers(@PathVariable String userId){
+        List<UserDto> followers = userService.getFollowersByUserId(userId);
+        return ResponseEntity.ok(followers);
+    }
+    @GetMapping("/followings/{userId}")
+    public ResponseEntity<List<UserDto>> getFollowings(@PathVariable String userId){
+        List<UserDto> followings = userService.getFollowingsByUserId(userId);
+        return ResponseEntity.ok(followings);
     }
 }

@@ -17,4 +17,8 @@ public interface UserService {
     void deleteUser(String userId);
     //follow user
     UserDto followUser(String userId1,String userId2);// userid1 follows userid2
+    //get user followers
+    List<UserDto> getFollowersByUserId(String userId);
+    //get user followings
+    List<UserDto> getFollowingsByUserId(String userId);
 }

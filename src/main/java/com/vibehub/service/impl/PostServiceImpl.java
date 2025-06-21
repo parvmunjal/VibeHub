@@ -1,6 +1,7 @@
 package com.vibehub.service.impl;
 
 import com.vibehub.dto.PostDto;
+import com.vibehub.dto.UserDto;
 import com.vibehub.exceptions.EntityNotFoundException;
 import com.vibehub.models.Post;
 import com.vibehub.models.User;
@@ -8,6 +9,7 @@ import com.vibehub.payload.MappingUtil;
 import com.vibehub.repo.PostRepo;
 import com.vibehub.repo.UserRepo;
 import com.vibehub.service.PostService;
+import com.vibehub.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +18,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,6 +32,8 @@ public class PostServiceImpl implements PostService {
     private UserRepo userRepo;
     @Autowired
     private MappingUtil mappingUtil;
+    @Autowired
+    private UserService userService;
 
     @Override
     public PostDto createPost(PostDto postDto) {
@@ -39,7 +42,7 @@ public class PostServiceImpl implements PostService {
         post.setTimeStamp(LocalDateTime.now());
         Post savedPost = postRepo.save(post);
 
-        String userId = postDto.getUserId();
+        String userId = postDto.getUser().getId();
         User user = userRepo.findById(userId).orElseThrow(EntityNotFoundException::new);
         user.getPosts().add(savedPost.getPostId());
         userRepo.save(user);
@@ -68,21 +71,64 @@ public class PostServiceImpl implements PostService {
     public PostDto getPostById(String postId) {
         Post post = postRepo.findById(postId).orElseThrow(EntityNotFoundException::new);
         logger.info("Getting posts by postId: {}",postId);
-        return mappingUtil.postToDto(post);
+        PostDto postDto = new PostDto();
+        postDto.setPostId(post.getPostId());
+        postDto.setCaption(post.getCaption());
+        postDto.setTimeStamp(post.getTimeStamp());
+        postDto.setContentLink(post.getContentLink());
+        postDto.setUser(userService.getUserById(post.getUserId()));
+        List<UserDto> likedByDtos = new ArrayList<>();
+        for (String likerId : post.getLikedBy()) {
+            UserDto likerDto = userService.getUserById(likerId);
+            likedByDtos.add(likerDto);
+        }
+        postDto.setLikedBy(likedByDtos);
+        postDto.setUser(userService.getUserById(post.getUserId()));
+        return postDto;
     }
 
     @Override
     public List<PostDto> getAllPosts() {
         List<Post> posts = postRepo.findAll();
-        return posts.stream().map((post)->mappingUtil.postToDto(post)).collect(Collectors.toList());
+        return posts.stream().map(post -> {
+            PostDto postDto = new PostDto();
+            postDto.setPostId(post.getPostId());
+            postDto.setCaption(post.getCaption());
+            postDto.setTimeStamp(post.getTimeStamp());
+            postDto.setContentLink(post.getContentLink());
+            postDto.setUser(userService.getUserById(post.getUserId()));
+            List<UserDto> likedByDtos = new ArrayList<>();
+            for (String likerId : post.getLikedBy()) {
+                UserDto likerDto = userService.getUserById(likerId);
+                likedByDtos.add(likerDto);
+            }
+            postDto.setLikedBy(likedByDtos);
+            return postDto;
+        }).collect(Collectors.toList());
     }
 
     @Override
     public List<PostDto> getAllPostsByUserId(String userId) {
         List<Post> posts = postRepo.findAllByUserId(userId);
-        logger.info("Getting posts by userId: {}",userId);
-        return posts.stream().map((post)->mappingUtil.postToDto(post)).collect(Collectors.toList());
+        logger.info("Getting posts by userId: {}", userId);
+
+        return posts.stream().map(post -> {
+            PostDto postDto = new PostDto();
+            postDto.setPostId(post.getPostId());
+            postDto.setCaption(post.getCaption());
+            postDto.setTimeStamp(post.getTimeStamp());
+            postDto.setContentLink(post.getContentLink());
+            postDto.setUser(userService.getUserById(post.getUserId()));
+            List<UserDto> likedByDtos = new ArrayList<>();
+            for (String likerId : post.getLikedBy()) {
+                UserDto likerDto = userService.getUserById(likerId);
+                likedByDtos.add(likerDto);
+            }
+            postDto.setLikedBy(likedByDtos);
+            return postDto;
+        }).collect(Collectors.toList());
     }
+
 
     @Override
     public PostDto likePost(String postId, String userId) {
@@ -97,7 +143,20 @@ public class PostServiceImpl implements PostService {
         }
 
         Post savedPost = postRepo.save(post);
-        return mappingUtil.postToDto(savedPost);
+        PostDto postDto =  new PostDto();
+        postDto.setPostId(savedPost.getPostId());
+        postDto.setCaption(savedPost.getCaption());
+        postDto.setTimeStamp(savedPost.getTimeStamp());
+        postDto.setContentLink(savedPost.getContentLink());
+        postDto.setUser(userService.getUserById(post.getUserId()));
+        List<UserDto> likedByDtos = new ArrayList<>();
+        for (String likerId : savedPost.getLikedBy()) {
+            UserDto likerDto = userService.getUserById(likerId);
+            likedByDtos.add(likerDto);
+        }
+
+        postDto.setLikedBy(likedByDtos);
+        return postDto;
     }
 
     @Override
@@ -119,7 +178,21 @@ public class PostServiceImpl implements PostService {
     private List<PostDto> findAllPosts(String userId){
         User user = userRepo.findById(userId).orElseThrow(EntityNotFoundException::new);
         List<Post> posts = postRepo.findAllByUserIdOrderByTimeStampDesc(userId);
-        return posts.stream().map((post) -> mappingUtil.postToDto(post)).toList();
+        return posts.stream().map(post -> {
+            PostDto postDto = new PostDto();
+            postDto.setPostId(post.getPostId());
+            postDto.setCaption(post.getCaption());
+            postDto.setTimeStamp(post.getTimeStamp());
+            postDto.setContentLink(post.getContentLink());
+            postDto.setUser(userService.getUserById(post.getUserId()));
+            List<UserDto> likedByDtos = new ArrayList<>();
+            for (String likerId : post.getLikedBy()) {
+                UserDto likerDto = userService.getUserById(likerId);
+                likedByDtos.add(likerDto);
+            }
+            postDto.setLikedBy(likedByDtos);
+            return postDto;
+        }).collect(Collectors.toList());
     }
 }
 
