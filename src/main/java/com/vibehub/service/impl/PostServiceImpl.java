@@ -1,11 +1,13 @@
 package com.vibehub.service.impl;
 
+import com.vibehub.dto.CommentDto;
 import com.vibehub.dto.PostDto;
 import com.vibehub.dto.UserDto;
 import com.vibehub.exceptions.EntityNotFoundException;
 import com.vibehub.models.Post;
 import com.vibehub.models.User;
 import com.vibehub.payload.MappingUtil;
+import com.vibehub.repo.CommentRepo;
 import com.vibehub.repo.PostRepo;
 import com.vibehub.repo.UserRepo;
 import com.vibehub.service.PostService;
@@ -34,6 +36,8 @@ public class PostServiceImpl implements PostService {
     private MappingUtil mappingUtil;
     @Autowired
     private UserService userService;
+    @Autowired
+    private CommentRepo commentRepo;
 
     @Override
     public PostDto createPost(PostDto postDto) {
@@ -84,6 +88,11 @@ public class PostServiceImpl implements PostService {
         }
         postDto.setLikedBy(likedByDtos);
         postDto.setUser(userService.getUserById(post.getUserId()));
+        List<CommentDto> comments=new ArrayList<>();
+        for (String commentId: post.getComments()){
+            comments.add(mappingUtil.commentToDto(commentRepo.findById(commentId).orElseThrow(EntityNotFoundException::new)));
+        }
+        postDto.setComments(comments);
         return postDto;
     }
 
@@ -103,6 +112,11 @@ public class PostServiceImpl implements PostService {
                 likedByDtos.add(likerDto);
             }
             postDto.setLikedBy(likedByDtos);
+            List<CommentDto> comments=new ArrayList<>();
+            for (String commentId: post.getComments()){
+                comments.add(mappingUtil.commentToDto(commentRepo.findById(commentId).orElseThrow(EntityNotFoundException::new)));
+            }
+            postDto.setComments(comments);
             return postDto;
         }).collect(Collectors.toList());
     }
@@ -125,6 +139,11 @@ public class PostServiceImpl implements PostService {
                 likedByDtos.add(likerDto);
             }
             postDto.setLikedBy(likedByDtos);
+            List<CommentDto> comments=new ArrayList<>();
+            for (String commentId: post.getComments()){
+                comments.add(mappingUtil.commentToDto(commentRepo.findById(commentId).orElseThrow(EntityNotFoundException::new)));
+            }
+            postDto.setComments(comments);
             return postDto;
         }).collect(Collectors.toList());
     }
@@ -154,8 +173,12 @@ public class PostServiceImpl implements PostService {
             UserDto likerDto = userService.getUserById(likerId);
             likedByDtos.add(likerDto);
         }
-
         postDto.setLikedBy(likedByDtos);
+        List<CommentDto> comments=new ArrayList<>();
+        for (String commentId: post.getComments()){
+            comments.add(mappingUtil.commentToDto(commentRepo.findById(commentId).orElseThrow(EntityNotFoundException::new)));
+        }
+        postDto.setComments(comments);
         return postDto;
     }
 
@@ -191,6 +214,11 @@ public class PostServiceImpl implements PostService {
                 likedByDtos.add(likerDto);
             }
             postDto.setLikedBy(likedByDtos);
+            List<CommentDto> comments=new ArrayList<>();
+            for (String commentId: post.getComments()){
+                comments.add(mappingUtil.commentToDto(commentRepo.findById(commentId).orElseThrow(EntityNotFoundException::new)));
+            }
+            postDto.setComments(comments);
             return postDto;
         }).collect(Collectors.toList());
     }

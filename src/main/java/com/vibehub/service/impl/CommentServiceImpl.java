@@ -4,10 +4,12 @@ import com.vibehub.dto.CommentDto;
 import com.vibehub.exceptions.EntityNotFoundException;
 import com.vibehub.models.Comment;
 import com.vibehub.models.Post;
+import com.vibehub.models.User;
 import com.vibehub.payload.MappingUtil;
 import com.vibehub.repo.CommentRepo;
 import com.vibehub.repo.PostRepo;
 import com.vibehub.service.CommentService;
+import com.vibehub.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +28,8 @@ public class CommentServiceImpl implements CommentService {
     private PostRepo postRepo;
     @Autowired
     private MappingUtil mappingUtil;
+    @Autowired
+    private UserService userService;
     private static final Logger logger = LoggerFactory.getLogger(CommentServiceImpl.class);
 
     @Override
@@ -49,7 +53,11 @@ public class CommentServiceImpl implements CommentService {
     public List<CommentDto> getAllCommentsByPostId(String postId) {
         List<Comment> comments = commentRepo.findAllByPostId(postId);
         logger.info("Getting comments by postId: {}",postId);
-        return comments.stream().map((comment)->mappingUtil.commentToDto(comment)).collect(Collectors.toList());
+        return comments.stream().map((comment)-> {
+            CommentDto commentDto=mappingUtil.commentToDto(comment);
+            commentDto.setUser(userService.getUserById(comment.getUserId()));
+            return commentDto;
+        }).collect(Collectors.toList());
     }
 
     @Override

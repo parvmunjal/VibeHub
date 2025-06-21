@@ -13,6 +13,6 @@ public class PostDto {
     private String contentLink;
     private LocalDateTime timeStamp;
     private UserDto user;
-    private List<String> comments=new ArrayList<>();
+    private List<CommentDto> comments=new ArrayList<>();
     private List<UserDto> likedBy=new ArrayList<>();
 }
