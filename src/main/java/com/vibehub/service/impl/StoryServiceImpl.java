@@ -1,6 +1,7 @@
 package com.vibehub.service.impl;
 
 import com.vibehub.dto.StoryDto;
+import com.vibehub.dto.UserDto;
 import com.vibehub.exceptions.EntityNotFoundException;
 import com.vibehub.models.Story;
 import com.vibehub.models.User;
@@ -8,6 +9,7 @@ import com.vibehub.payload.MappingUtil;
 import com.vibehub.repo.StoryRepo;
 import com.vibehub.repo.UserRepo;
 import com.vibehub.service.StoryService;
+import com.vibehub.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +17,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class StoryServiceImpl implements StoryService {
@@ -26,6 +30,8 @@ public class StoryServiceImpl implements StoryService {
     private UserRepo userRepo;
     @Autowired
     private MappingUtil mappingUtil;
+    @Autowired
+    private UserService userService;
 
 
     @Override
@@ -36,7 +42,7 @@ public class StoryServiceImpl implements StoryService {
         logger.info("Creating story: {}",storyDto);
         Story savedStory = storyRepo.save(story);
 
-        String userId = storyDto.getUserId();
+        String userId = storyDto.getUser().getId();
         User user = userRepo.findById(userId).orElseThrow(EntityNotFoundException::new);
         user.getStories().add(savedStory.getId());
         userRepo.save(user);
@@ -73,7 +79,17 @@ public class StoryServiceImpl implements StoryService {
     @Override
     public List<StoryDto> findAllByUserId(String userId) {
         List<Story> stories = storyRepo.findByUserId(userId);
-        return stories.stream().map((story) -> mappingUtil.storyToDto(story)).toList();
+        return stories.stream().map((story) -> {
+            StoryDto storyDto = mappingUtil.storyToDto(story);
+            storyDto.setUser(userService.getUserById(userId));
+            Set<UserDto> viewedBy = new HashSet<>();
+            for(String user:story.getViewedBy()){
+                UserDto userDto=userService.getUserById(user);
+                viewedBy.add(userDto);
+            }
+            storyDto.setViewedBy(viewedBy);
+            return storyDto;
+        }).toList();
     }
     @Override
     public List<List<StoryDto>> findAllStoriesOfFollowings(String userId) {

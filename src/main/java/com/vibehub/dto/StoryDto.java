@@ -12,9 +12,9 @@ import java.util.Set;
 @Data
 public class StoryDto {
     private String id;
-    private String userId;
     private String content;
     private LocalDateTime timestamp;
-    private Set<String> viewedBy=new HashSet<>();
+    private UserDto user;
+    private Set<UserDto> viewedBy=new HashSet<>();
     private boolean status;
 }

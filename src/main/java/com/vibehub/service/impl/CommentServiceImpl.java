@@ -45,8 +45,9 @@ public class CommentServiceImpl implements CommentService {
         String commentId = savedComment.getId();
         post.getComments().add(commentId);
         postRepo.save(post);
-
-        return mappingUtil.commentToDto(savedComment);
+        CommentDto commentDto1 = mappingUtil.commentToDto(savedComment);
+        commentDto1.setUser(userService.getUserById(commentDto1.getUser().getId()));
+        return commentDto1;
     }
 
     @Override
