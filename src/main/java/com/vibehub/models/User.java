@@ -20,6 +20,7 @@ public class User {
     private String password;
     private String bio;
     private String profilePicUrl;
+    private Role role;
     private List<String> followers=new ArrayList<>();
     private List<String> followings=new ArrayList<>();
     private List<String> stories=new ArrayList<>();

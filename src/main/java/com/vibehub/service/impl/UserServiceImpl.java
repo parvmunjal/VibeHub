@@ -11,6 +11,7 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,11 +28,13 @@ public class UserServiceImpl implements UserService {
     private ModelMapper modelMapper;
     @Autowired
     private MappingUtil mappingUtil;
-
+    @Autowired
+    private PasswordEncoder passwordEncoder;
     @Override
     public UserDto createUser(UserDto userDto) {
         User user = mappingUtil.dtoToUser(userDto);
         logger.info("Creating user: {}",userDto);
+        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         User savedUser = userRepo.save(user);
         return mappingUtil.userToDto(savedUser);
     }
