@@ -60,9 +60,9 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth-> auth
-                                .requestMatchers("/auth/**").permitAll()
-                                .requestMatchers("/api/users/**").hasAnyRole("USER","ADMIN")
-                        //.anyRequest().permitAll()
+//                                .requestMatchers("/auth/**").permitAll()
+//                                .requestMatchers("/api/users/**").hasAnyRole("USER","ADMIN")
+                        .anyRequest().permitAll()
                 )
                 .userDetailsService(userDetailsService)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
